@@ -1,3 +1,3 @@
-# Addon Name
+# AutoQuest
 
-This is the repository for <Addon Name>. Modified for Ascension.gg. 
+This is the repository for AutoQuest. Modified for Ascension.gg. 
