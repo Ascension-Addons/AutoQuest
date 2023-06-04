@@ -689,7 +689,11 @@ local dailyList = {
 ----------------------------------------------------------------------------------------------------
 
 local function IsHighRiskQuest(name)
-	return name:match("^Bloody Expedition:") or (name:match("%(High[- ]Risk%)$") and (name:match("^Population Control") or name:match("^War in")))
+	return name:match("^Bloody Expedition:")
+		or name:match("^Ill Gotten Goods:")
+		or name:match("^High[- ]Risk")
+		or name:match("^War in")
+		or name:match("High[- ]Risk%)$")
 end
 
 local function IsQuestEnabled(name)
@@ -763,11 +767,11 @@ eventFrame:SetScript("OnEvent", function(self, event)
 			name, level = select(1 + ((on_quest-1)*5), GetGossipAvailableQuests())
 			if name and type(name) == "string" and not acceptedQuests[name] and IsQuestEnabled(name) then
 				acceptedQuests[name] = true
-				if (AutoQuestSave.autoDaily and dailyList[name])
-				or (AutoQuestSave.autoFate and fateList[name])
-				or (AutoQuestSave.autoHR and IsHighRiskQuest(name))
-				or AutoQuestSave.autoAccept
-				or IsQuestComplete(name, level) then
+				local accept = AutoQuestSave.autoAccept
+				if dailyList[name] then accept = AutoQuestSave.autoDaily end
+				if fateList[name] then accept = AutoQuestSave.autoFate end
+				if IsHighRiskQuest(name) then accept = AutoQuestSave.autoHR end
+				if accept or IsQuestComplete(name, level) then
 					SelectGossipAvailableQuest(on_quest)
 				end
 			end
