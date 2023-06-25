@@ -798,8 +798,8 @@ eventFrame:SetScript("OnEvent", function(self, event)
 		end
 		for i=numActiveQuests+1,numActiveQuests+numAvailableQuests do
 			local isTrivial, isDaily, isRepeatable = GetAvailableQuestInfo(i - numActiveQuests);
-			name = GetAvailableTitle(i)
-			level = GetAvailableLevel(i)
+			name = GetAvailableTitle(i - numActiveQuests)
+			level = GetAvailableLevel(i - numActiveQuests)
 			if name and type(name) == "string" and not acceptedQuests[name] and IsQuestEnabled(name) then
 				acceptedQuests[name] = true
 				local accept = AutoQuestSave.autoAccept
@@ -807,7 +807,7 @@ eventFrame:SetScript("OnEvent", function(self, event)
 				if fateList[name] then accept = AutoQuestSave.autoFate end
 				if IsHighRiskQuest(name) then accept = AutoQuestSave.autoHR end
 				if accept or IsQuestComplete(name, level) then
-					SelectAvailableQuest(i)
+					SelectAvailableQuest(i - numActiveQuests)
 					return
 				end
 			end
