@@ -785,13 +785,31 @@ eventFrame:SetScript("OnEvent", function(self, event)
 		if not AutoQuestSave.autoComplete and not AutoQuestSave.autoAccept then
 			return
 		end
+		local numActiveQuests = GetNumActiveQuests();
+		local numAvailableQuests = GetNumAvailableQuests();
 		local name, level
-		for i=1,GetNumActiveQuests() do
+		for i=1,numActiveQuests do
 			name = GetActiveTitle(i)
 			level = GetActiveLevel(i)
 			if IsQuestEnabled(name) and IsQuestComplete(name, level) then
 				SelectActiveQuest(i)
 				return
+			end
+		end
+		for i=numActiveQuests+1,numActiveQuests+numAvailableQuests do
+			local isTrivial, isDaily, isRepeatable = GetAvailableQuestInfo(i - numActiveQuests);
+			name = GetAvailableTitle(i - numActiveQuests)
+			level = GetAvailableLevel(i - numActiveQuests)
+			if name and type(name) == "string" and not acceptedQuests[name] and IsQuestEnabled(name) then
+				acceptedQuests[name] = true
+				local accept = AutoQuestSave.autoAccept
+				if dailyList[name] then accept = AutoQuestSave.autoDaily end
+				if fateList[name] then accept = AutoQuestSave.autoFate end
+				if IsHighRiskQuest(name) then accept = AutoQuestSave.autoHR end
+				if accept or IsQuestComplete(name, level) then
+					SelectAvailableQuest(i - numActiveQuests)
+					return
+				end
 			end
 		end
 		return
@@ -948,6 +966,12 @@ function SlashCmdList.AUTOQUEST(input)
 
 	if command == "toggle" then
 		if value == "" then
+			DEFAULT_CHAT_FRAME:AddMessage("Disabled Quests:")
+			for k,v in pairs(AutoQuestSave.overrideList) do
+				if k and not v then
+					DEFAULT_CHAT_FRAME:AddMessage(k)
+				end
+			end
 			DEFAULT_CHAT_FRAME:AddMessage("Syntax: /aq toggle <quest name>")
 		else
 			local enabled = not IsQuestEnabled(value) -- toggle it
