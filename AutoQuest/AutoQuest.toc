@@ -1,4 +1,4 @@
-## Interface: 20400
+## Interface: 30300
 ## Title: AutoQuest
 ## Author: Pyralis
 ## Version: 1.5
